@@ -1,0 +1,80 @@
+apply plugin: 'com.android.application'
+apply plugin: 'com.google.gms.google-services'
+
+android {
+    compileSdkVersion 28
+    defaultConfig {
+        applicationId "com.example.multilanguage"
+        minSdkVersion 24
+        targetSdkVersion 28
+        versionCode 4
+        versionName "1.01"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments = ["room.schemaLocation": "$projectDir/schemas".toString()]
+            }
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    dataBinding {
+        enabled true
+    }
+}
+
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+
+    // Android architecture
+    def archVersion = '2.0.0-rc01'
+    implementation "androidx.lifecycle:lifecycle-extensions:${archVersion}"
+    implementation "androidx.lifecycle:lifecycle-common-java8:${archVersion}"
+    implementation 'com.google.firebase:firebase-auth:16.1.0'
+    annotationProcessor "androidx.lifecycle:lifecycle-compiler:${archVersion}"
+
+    // dagger
+    def daggerVersion = '2.16'
+    implementation "com.google.dagger:dagger:${daggerVersion}"
+    implementation "com.google.dagger:dagger-android:${daggerVersion}"
+    implementation "com.google.dagger:dagger-android-support:${daggerVersion}"
+    annotationProcessor "com.google.dagger:dagger-compiler:${daggerVersion}"
+
+    // Room
+    implementation "androidx.room:room-runtime:${archVersion}"
+    annotationProcessor "androidx.room:room-compiler:${archVersion}"
+
+    // Picasso
+    implementation('com.squareup.picasso:picasso:2.71828') {
+        exclude group: 'com.android.support', module: 'support-annotations'
+        exclude group: 'com.android.support', module: 'exifinterface'
+    }
+
+
+    // Tests
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'androidx.test:runner:1.1.0-alpha4'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0-alpha4'
+
+    // Test helpers for LiveData
+    testImplementation "androidx.arch.core:core-testing:${archVersion}"
+
+    // Test helpers for Room
+    testImplementation "androidx.room:room-testing:${archVersion}"
+    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
+
+    implementation 'com.jakewharton:butterknife:8.4.0'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:8.4.0'
+}

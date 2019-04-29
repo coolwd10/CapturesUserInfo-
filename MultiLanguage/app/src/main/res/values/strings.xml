@@ -1,0 +1,44 @@
+<resources>
+    <string name="app_name">MultiLanguage</string>
+    <string name="tv_info">Enter mobile number</string>
+    <string name="submit">Submit</string>
+    <string name="english">English</string>
+    <string name="hindi">Hindi</string>
+    <string name="change_lang">Change language</string>
+    <string name="progress_dialog_message">Please wait...</string>
+
+
+    <string name="otp_message_msg_1">Verify your mobile number</string>
+    <string name="login_authenticating">Authenticating...</string>
+
+    <string name="otp_message_msg_2">(Enter the OTP below in case if we fail to detect the SMS automatically)</string>
+    <string name="otp_hint">Enter OTP</string>
+    <string name="otp_progress_msg">OTP verification...</string>
+    <string name="otp_validation_msg">Please enter valid OTP.</string>
+    <string name="otp_resend_msg"><u>Resend OTP</u></string>
+    <string name="otp_resend_otp_msg">Please wait your OTP is resending...</string>
+
+    <string name="warning">Warning</string>
+    <string name="dialog_subtitle">Oops!</string>
+    <string name="cancel">Cancel</string>
+    <string name="neutral">netural</string>
+    <string name="dismiss">dismiss</string>
+    <string name="global_OK_label">Ok</string>
+    <string name="msg_phone_invalid">Please enter valid phone number</string>
+    <string name="firstName">First name</string>
+    <string name="LastName">Address</string>
+    <string name="Mobile">Mobile</string>
+    <string name="Email">Email</string>
+    <string name="DateofBirth">Date of Birth</string>
+    <string name="Male">Male</string>
+    <string name="Female">Female</string>
+    <string name="save">save</string>
+    <string name="empty_feild_error">Please fill the data.</string>
+    <string name="update_rec">record save</string>
+    <string name="share">share</string>
+
+    <string name="not_now_text">Not Now</string>
+    <string name="no_recored">No recored avaliable</string>
+
+
+</resources>

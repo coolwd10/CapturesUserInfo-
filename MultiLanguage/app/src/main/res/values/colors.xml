@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#008577</color>
+    <color name="colorPrimaryDark">#00574B</color>
+    <color name="colorAccent">#D81B60</color>
+
+    <color name="category_list_view_divider_color">#dddddd</color>
+    <item name="app_button_green_color" type="color">#009D3D</item>
+
+    <color name="white">#FFFFFF</color>
+    <color name="green">#009D3D</color>
+    <color name="blue">#333545</color>
+</resources>

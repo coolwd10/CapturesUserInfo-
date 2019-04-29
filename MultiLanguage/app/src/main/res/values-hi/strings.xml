@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="tv_info">एंटर युवर मोबाइल नंबर</string>
+    <string name="submit">सब्मिट</string>
+
+    <string name="english">इंग्लीश</string>
+    <string name="hindi">हिन्दी</string>
+    <string name="change_lang">भाषा चुनै</string>
+
+    <string name="progress_dialog_message">प्लीज़ वेट...</string>
+
+    <string name="otp_message_msg_1">वेरिफाइ युवर मोबाइल नंबर</string>
+    <string name="login_authenticating">ऑतेंटिकेटिंग...</string>
+
+    <string name="otp_message_msg_2">(एंटर थे ओतप बिलो इन केस इफ़ वी फैल तो डिटेक्ट थे स्मस ऑटोमॅटिकली)</string>
+    <string name="otp_hint">एंटर ओतप</string>
+    <string name="otp_progress_msg">ओतप वेरिफिकेशन...</string>
+    <string name="otp_validation_msg">प्लीज़ एंटर वालिद ओतप.</string>
+    <string name="otp_resend_msg"><u>रेसेंड ओतप</u></string>
+    <string name="otp_resend_otp_msg">प्लीज़ वेट युवर ओतप इस रेसएंडिंग...</string>
+
+    <string name="warning">वॉर्निंग</string>
+    <string name="dialog_subtitle">ऊप्स!</string>
+    <string name="cancel">कॅन्सल</string>
+    <string name="neutral">नेतुराल</string>
+    <string name="dismiss">डिसमिस</string>
+    <string name="global_OK_label">ओक</string>
+    <string name="msg_phone_invalid">प्लीज़ एंटर वालिद फोन नंबर</string>
+    <string name="firstName">फर्स्ट नाम</string>
+    <string name="LastName">अड्रेस</string>
+    <string name="Mobile">मोबाइल</string>
+    <string name="Email">एमैल</string>
+    <string name="DateofBirth">डटे ऑफ  ऑफ  बरथ</string>
+    <string name="Male">पुरुष</string>
+    <string name="Female">फीमेल</string>
+    <string name="save">सवे</string>
+    <string name="empty_feild_error">प्लीज़ फिल थे दाता.</string>
+    <string name="update_rec">रेकॉर्ड सवे</string>
+    <string name="share">शेर करे</string>
+    <string name="no_recored">नो रेकॉरेड अवलियब्ले</string>
+
+
+</resources>

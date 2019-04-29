@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/otpDialogStyle"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:clickable="false"
+    android:minWidth="300dp">
+
+    <TextView
+        android:id="@+id/tv_otp_msg_1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:text="@string/otp_message_msg_1"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textColor="@android:color/black"
+        android:textSize="16dp" />
+
+    <TextView
+        android:id="@+id/tv_otp_msg_2"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tv_otp_msg_1"
+        android:gravity="center"
+        android:text="@string/otp_message_msg_2"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textColor="@android:color/black"
+        android:textSize="12dp" />
+
+
+    <EditText
+        android:id="@+id/etv_otp"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tv_otp_msg_2"
+        android:layout_centerHorizontal="true"
+        android:textColor="@android:color/black"
+        android:hint="@string/otp_hint">
+        <requestFocus />
+    </EditText>
+
+    <Button
+        android:id="@+id/btnsubmit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/etv_otp"
+        android:gravity="center"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/button_rectangle_selector_view"
+        android:text="@string/submit" />
+
+    <TextView
+        android:id="@+id/tv_resend_otp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/btnsubmit"
+        android:layout_alignParentBottom="true"
+        android:gravity="center"
+        android:text="@string/otp_resend_msg"
+        android:textColor="@android:color/holo_blue_dark"
+        android:layout_alignParentRight="true" />
+
+</RelativeLayout>
