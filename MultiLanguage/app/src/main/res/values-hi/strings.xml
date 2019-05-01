@@ -38,6 +38,8 @@
     <string name="update_rec">रेकॉर्ड सवे</string>
     <string name="share">शेर करे</string>
     <string name="no_recored">नो रेकॉरेड अवलियब्ले</string>
+    <string name="invalid_code">इन्वलिड कोड एंटर्ड...</string>
+    <string name="invalid_code_default_msg">सर्वर इश्यू हम जल्दी ठीक करना का प्रयास करेंगे करेंगे...</string>
 
 
 </resources>

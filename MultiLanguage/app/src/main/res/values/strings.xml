@@ -39,6 +39,8 @@
 
     <string name="not_now_text">Not Now</string>
     <string name="no_recored">No recored avaliable</string>
+    <string name="invalid_code">Invalid code entered...</string>
+    <string name="invalid_code_default_msg">Somthing is wrong, we will fix it soon...</string>
 
 
 </resources>

@@ -26,12 +26,12 @@ public class LandingActivity extends BaseActivity {
     @Inject
     SharedPreferencesManager sharedPreferencesManager;
 
-    //@OnClick(R.id.btn_english)
+    @OnClick(R.id.btn_english)
     public void onSignUpButtonClicked() {
         loadLoginView("en");
     }
 
-    //@OnClick(R.id.btn_hindi)
+    @OnClick(R.id.btn_hindi)
     public void onRegistrationClicked() {
         loadLoginView("hi");
     }
@@ -41,33 +41,17 @@ public class LandingActivity extends BaseActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         initDI();
+        ButterKnife.bind(this);
 
         boolean isLangSelected = sharedPreferencesManager.getBoolean("languageSel", false);
         boolean isMobVerificationDone = sharedPreferencesManager.getBoolean("MobVerificationDone", false);
-
         if (isMobVerificationDone) {
             startHomeActivity();
         } else if (isLangSelected) {
             startLoginActivity();
-        } else {
-            Button button = (Button) findViewById(R.id.btn_english);
-            button.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    loadLoginView("en");
-                }
-            });
-
-            Button btn_hindi = (Button) findViewById(R.id.btn_hindi);
-            btn_hindi.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    loadLoginView("hi");
-                }
-            });
         }
 
-        //ButterKnife.bind(this);
+
 
     }
 

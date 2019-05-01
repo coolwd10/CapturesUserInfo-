@@ -36,8 +36,9 @@ import java.util.Locale;
 
 import javax.inject.Inject;
 
-//import butterknife.BindView;
-//import butterknife.ButterKnife;
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 
 public class HomeActivity extends BaseActivity implements IHomeView {
@@ -52,15 +53,30 @@ public class HomeActivity extends BaseActivity implements IHomeView {
     HomePresenter mHomePresenter;
 
     private Locale mLocale;
-    private EditText mName;
-    private EditText mAddress;
+    @BindView(R.id.input_name)
+    EditText mName;
+
+    @BindView(R.id.input_lastname)
+    EditText mAddress;
+
     private ImageView mProfileImage;
 
     private boolean isUpdateButton;
     private PermissionsChecker mPermissionChecker;
 
     private String mImagePath;
-    private Button mShare;
+
+    @OnClick(R.id.btn_english)
+    public void onSignUpButtonClicked() {
+        loadLoginView("en");
+    }
+
+    @OnClick(R.id.btn_hindi)
+    public void onRegistrationClicked() {
+        loadLoginView("hi");
+    }
+
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,64 +88,37 @@ public class HomeActivity extends BaseActivity implements IHomeView {
         mHomePresenter.read(mLocale.getLanguage());
         mPermissionChecker = new PermissionsChecker(this);
 
-        mName = findViewById(R.id.input_name);
-        mAddress = findViewById(R.id.input_lastname);
-
-
-        Button save = (Button) findViewById(R.id.profile_btn_edit);
-        save.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (mAddress == null || mName == null || mAddress.length() == 0 || mName.length() == 0) {
-                    Toast.makeText(HomeActivity.this, getResources().getString(R.string.empty_feild_error),
-                            Toast.LENGTH_LONG).show();
-                    return;
-                }
-                if (isUpdateButton) {
-                    mHomePresenter.update(mLocale.getLanguage(),
-                            mName.getText().toString(), mAddress.getText().toString(), mImagePath);
-                } else {
-                    mHomePresenter.create(mLocale.getLanguage(),
-                            mName.getText().toString(), mAddress.getText().toString(), mImagePath);
-                }
-
-            }
-        });
-
-        Button button = (Button) findViewById(R.id.btn_english);
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                loadLoginView("en");
-            }
-        });
-
-        Button btn_hindi = (Button) findViewById(R.id.btn_hindi);
-        btn_hindi.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                loadLoginView("hi");
-            }
-        });
+        ButterKnife.bind(this);
         mProfileImage = findViewById(R.id.img_profile);
         profileImageClick();
 
-        mShare =  findViewById(R.id.btn_share);
-        shareBtnClick();
     }
 
-    private void shareBtnClick() {
-        mShare.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent i = new Intent(HomeActivity.this,
-                        DetailActivity.class);
-                startActivity(i);
-            }
-        });
+
+    @OnClick(R.id.profile_btn_edit)
+    public void onSaveUpdateBtnClicked() {
+        if (mAddress == null || mName == null || mAddress.length() == 0 || mName.length() == 0) {
+            Toast.makeText(HomeActivity.this, getResources().getString(R.string.empty_feild_error),
+                    Toast.LENGTH_LONG).show();
+            return;
+        }
+        if (isUpdateButton) {
+            mHomePresenter.update(mLocale.getLanguage(),
+                    mName.getText().toString(), mAddress.getText().toString(), mImagePath);
+        } else {
+            mHomePresenter.create(mLocale.getLanguage(),
+                    mName.getText().toString(), mAddress.getText().toString(), mImagePath);
+        }
     }
 
-    private void profileImageClick() {
+    @OnClick(R.id.btn_share)
+    public void shareBtnClick() {
+        Intent i = new Intent(HomeActivity.this,
+                DetailActivity.class);
+        startActivity(i);
+    }
+
+     public void profileImageClick() {
         mProfileImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -168,7 +157,6 @@ public class HomeActivity extends BaseActivity implements IHomeView {
 
     private void takePhotoFromCamera() {
         try {
-
             Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
             startActivityForResult(intent, CAMERA);
         } catch (Exception e) {
@@ -183,7 +171,8 @@ public class HomeActivity extends BaseActivity implements IHomeView {
         if (requestCode == CAMERA) {
             Bitmap thumbnail = (Bitmap) data.getExtras().get("data");
             mProfileImage.setImageBitmap(thumbnail);
-            mImagePath = IMAGE_DIRECTORY+"/"+mLocale.getLanguage()+".jpg";//saveImage(thumbnail);
+            mImagePath = IMAGE_DIRECTORY+"/"+mLocale.getLanguage()+".jpg";
+             saveImage(thumbnail);
             Toast.makeText(HomeActivity.this, "Image Saved!", Toast.LENGTH_SHORT).show();
         }
     }

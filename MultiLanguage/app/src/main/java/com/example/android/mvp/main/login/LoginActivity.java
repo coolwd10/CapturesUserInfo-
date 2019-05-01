@@ -7,7 +7,6 @@ import android.view.View;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.android.mvp.core.base.BaseActivity;
@@ -37,8 +36,9 @@ import javax.inject.Inject;
 
 import androidx.annotation.NonNull;
 
-//import butterknife.BindView;
-//import butterknife.ButterKnife;
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 
 public class LoginActivity extends BaseActivity implements ILoginView, DialogManager.NoticeDialogListener {
@@ -47,21 +47,34 @@ public class LoginActivity extends BaseActivity implements ILoginView, DialogMan
 
     public static final int REQUEST_CODE_ASK_PERMISSIONS = 321;
 
-
     @Inject
     LoginPresenter mLoginPresenter;
-
     private DialogManager mDialogManager;
-
     private FirebaseAuth mAuth;
     private String mVerificationId;
-    EditText otp;
-
-    private EditText mEnterMobNumber;
-
+    private PhoneAuthProvider.ForceResendingToken mResendToken;
+    Dialog mCustomdialog;
 
     @Inject
     SharedPreferencesManager sharedPreferencesManager;
+
+    @BindView(R.id.etv_mob)
+    EditText mEnterMobNumber;
+
+    @OnClick(R.id.btn_english)
+    public void onSignUpButtonClicked() {
+        loadLoginView("en");
+    }
+
+    @OnClick(R.id.btn_hindi)
+    public void onRegistrationClicked() {
+        loadLoginView("hi");
+    }
+
+    @OnClick(R.id.btn_submit)
+    public void onSubmitBtnClick() {
+        mLoginPresenter.doLogin(mEnterMobNumber.getText().toString());
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -73,36 +86,11 @@ public class LoginActivity extends BaseActivity implements ILoginView, DialogMan
 
         FirebaseApp.initializeApp(getApplicationContext());
         mAuth = FirebaseAuth.getInstance();
-
-//        ButterKnife.bind(this);
+        mAuth.setLanguageCode(getCurrentLanguage().getLanguage());
+        ButterKnife.bind(this);
 
         mEnterMobNumber = findViewById(R.id.etv_mob);
-
-        Button button = (Button) findViewById(R.id.btn_english);
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                loadLoginView("en");
-            }
-        });
-
-        Button btn_hindi = (Button) findViewById(R.id.btn_hindi);
-        btn_hindi.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                loadLoginView("hi");
-            }
-        });
-
-        Button submit = findViewById(R.id.btn_submit);
-        submit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mLoginPresenter.doLogin(mEnterMobNumber.getText().toString());
-            }
-        });
     }
-
 
     @Override
     protected void onStart() {
@@ -118,38 +106,108 @@ public class LoginActivity extends BaseActivity implements ILoginView, DialogMan
         ((MainApplication) getApplicationContext()).getmAppComponent().inject(this);
     }
 
-
     private void loadLoginView(String langType) {
         setLanguage(langType);
     }
 
+    @Override
+    public void sendVerificationCode(String no) {
+        PhoneAuthProvider.getInstance().verifyPhoneNumber(
+                "+91" + no,
+                60,
+                TimeUnit.SECONDS,
+                TaskExecutors.MAIN_THREAD,
+                mCallbacks);
+    }
 
-    void showCustomDialog(String code) {
-        Dialog dialog = new Dialog(LoginActivity.this,
-                android.R.style.Theme_Translucent);
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+    private PhoneAuthProvider.OnVerificationStateChangedCallbacks mCallbacks = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
+        @Override
+        public void onVerificationCompleted(PhoneAuthCredential phoneAuthCredential) {
 
-        dialog.setCancelable(true);
-        dialog.setContentView(R.layout.user_input_dialog_box);
+            //Getting the code sent by SMS
+            String code = phoneAuthCredential.getSmsCode();
+            //sometime the code is not detected automatically
+            //in this case the code will be null
+            //so user has to manually enter the code
+            //verifying the code
+            mCustomdialog.dismiss();
+            verifyVerificationCode(code);
+        }
 
-        Button submitButton = (Button) dialog.findViewById(R.id.btnsubmit);
-        EditText mOtp = (EditText) dialog.findViewById(R.id.etv_otp);
-        TextView resendOtp = (TextView) dialog.findViewById(R.id.tv_resend_otp);
+        public void onCodeAutoRetrievalTimeOut(String var1) {
+            hideProgress();
+        }
 
-        submitButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (mOtp.getText().toString() != null
-                        && mOtp.getText().toString().length() > 0) {
-                    verifyVerificationCode(mOtp.getText().toString());
-                }
-            }
-        });
+        @Override
+        public void onVerificationFailed(FirebaseException e) {
+            hideProgress();
+            Toast.makeText(LoginActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
+        }
 
-        dialog.show();
+        @Override
+        public void onCodeSent(String verificationId, PhoneAuthProvider.ForceResendingToken token) {
+            super.onCodeSent(verificationId, token);
+            //storing the verification id that is sent to the user
+            mVerificationId = verificationId;
+            mResendToken = token;
+            hideProgress();
+            showCustomDialog();
+        }
+    };
+
+    private void verifyVerificationCode(String code) {
+        //creating the credential
+        PhoneAuthCredential credential = PhoneAuthProvider.getCredential(mVerificationId, code);
+        hideProgress();
+        //signing the user
+        signInWithPhoneAuthCredential(credential);
+    }
+
+    private void signInWithPhoneAuthCredential(PhoneAuthCredential credential) {
+        mAuth.signInWithCredential(credential)
+                .addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            //verification successful we will start the profile activity
+                            sharedPreferencesManager.putBoolean("MobVerificationDone", true);
+                            Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                            startActivity(intent);
+
+                        } else {
+                            //verification unsuccessful.. display an error message
+                            String message = getResources().getString(R.string.invalid_code_default_msg);//"Somthing is wrong, we will fix it soon...";
+
+                            if (task.getException() instanceof FirebaseAuthInvalidCredentialsException) {
+                                message = getResources().getString(R.string.invalid_code);
+                            }
+                            mDialogManager.showAlertDialog(LoginActivity.this, message,
+                                    DialogManager.DIALOGTYPE.DIALOG, 102, DialogManager.MSGTYPE.INFO,
+                                    getResources().getString(R.string.warning),
+                                    getResources().getString(R.string.global_OK_label),
+                                    null, null, true);
+
+
+                        }
+                    }
+                });
+    }
+
+    @Override
+    public void onDialogPositiveClick(int dialogId) {
 
     }
 
+    @Override
+    public void onDialogNegativeClick(int dialogId) {
+
+    }
+
+    @Override
+    public void onDialogNeutralClick(int dialogId) {
+
+    }
 
     @Override
     public void showProgress() {
@@ -178,117 +236,27 @@ public class LoginActivity extends BaseActivity implements ILoginView, DialogMan
                 btn_ok, null, null, true);
     }
 
-    private boolean validNo(String no) {
-        if (no.isEmpty() || no.length() < 10) {
-            mEnterMobNumber.setError("Enter a valid mobile");
-            mEnterMobNumber.requestFocus();
-            return false;
-        }
-        return true;
-    }
+    void showCustomDialog() {
+        mCustomdialog = new Dialog(LoginActivity.this,
+                android.R.style.Theme_Translucent);
+        mCustomdialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
 
-    @Override
-    public void sendVerificationCode(String no) {
-        PhoneAuthProvider.getInstance().verifyPhoneNumber(
-                "+91" + no,
-                60,
-                TimeUnit.SECONDS,
-                TaskExecutors.MAIN_THREAD,
-                mCallbacks);
-    }
+        mCustomdialog.setCancelable(true);
+        mCustomdialog.setContentView(R.layout.user_input_dialog_box);
 
-    private PhoneAuthProvider.OnVerificationStateChangedCallbacks mCallbacks = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
-        @Override
-        public void onVerificationCompleted(PhoneAuthCredential phoneAuthCredential) {
-
-            //Getting the code sent by SMS
-            hideProgress();
-
-
-//            sharedPreferencesManager.putBoolean("MobVerificationDone", true);
-//            Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
-//            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-//            startActivity(intent);
-
-            String code = phoneAuthCredential.getSmsCode();
-
-            //sometime the code is not detected automatically
-            //in this case the code will be null
-            //so user has to manually enter the code
-            if (code != null) {
-                //verifying the code
-                verifyVerificationCode(code);
-            } else {
-                showCustomDialog(code);
+        Button submitButton = mCustomdialog.findViewById(R.id.btnsubmit);
+        EditText mOtp = mCustomdialog.findViewById(R.id.etv_otp);
+        submitButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (mOtp.getText().toString() != null
+                        && mOtp.getText().toString().length() > 0) {
+                    verifyVerificationCode(mOtp.getText().toString());
+                }
             }
-        }
+        });
 
-        public void onCodeAutoRetrievalTimeOut(String var1) {
-            hideProgress();
-        }
-
-        @Override
-        public void onVerificationFailed(FirebaseException e) {
-            hideProgress();
-            Toast.makeText(LoginActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
-        }
-
-        @Override
-        public void onCodeSent(String s, PhoneAuthProvider.ForceResendingToken forceResendingToken) {
-            super.onCodeSent(s, forceResendingToken);
-            //storing the verification id that is sent to the user
-            mVerificationId = s;
-        }
-    };
-
-    private void verifyVerificationCode(String code) {
-        //creating the credential
-        PhoneAuthCredential credential = PhoneAuthProvider.getCredential(mVerificationId, code);
-        hideProgress();
-        //signing the user
-        signInWithPhoneAuthCredential(credential);
-    }
-
-    private void signInWithPhoneAuthCredential(PhoneAuthCredential credential) {
-        mAuth.signInWithCredential(credential)
-                .addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            //verification successful we will start the profile activity
-                            sharedPreferencesManager.putBoolean("MobVerificationDone", true);
-                            Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
-                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                            startActivity(intent);
-
-                        } else {
-
-                            //verification unsuccessful.. display an error message
-
-                            String message = "Somthing is wrong, we will fix it soon...";
-
-                            if (task.getException() instanceof FirebaseAuthInvalidCredentialsException) {
-                                message = "Invalid code entered...";
-                            }
-
-
-                        }
-                    }
-                });
-    }
-
-    @Override
-    public void onDialogPositiveClick(int dialogId) {
-
-    }
-
-    @Override
-    public void onDialogNegativeClick(int dialogId) {
-
-    }
-
-    @Override
-    public void onDialogNeutralClick(int dialogId) {
+        mCustomdialog.show();
 
     }
 }

@@ -27,7 +27,7 @@
             android:layout_height="match_parent"
             android:text="@string/submit"
             android:id="@+id/btn_submit"
-            android:textColor="@android:color/white" />
+            android:textColor="@android:color/black" />
 
         <TextView
             android:layout_width="match_parent"
